@@ -1,4 +1,4 @@
-function[out] = get_conditions(stimpath)
+function[out] = create_file_list(stimpath)
 tmp  = dir([stimpath, '*.png']);
 file_names = {tmp(:).name}';
 for k = 1:numel(tmp)
@@ -14,7 +14,7 @@ language(ismember(language, 'lh')) = {'l_high'};
 language(ismember(language, 'll')) = {'l_low'};
 visual(ismember(visual, 'vh')) = {'v_high'}; 
 visual(ismember(visual, 'vl')) = {'v_low'};
-out = sortrows(table(topic', char(truth'), char(language'), char(visual'), example', CSS', fn', ...
+flist = sortrows(table(topic', char(truth'), char(language'), char(visual'), example', CSS', fn', ...
     'VariableNames',["topic" "truth" "language" "visual" "variant" "CSS" "file_name"]));
-
+save([stimpath, 'stimuli_file_list.mat'], 'flist');
 end

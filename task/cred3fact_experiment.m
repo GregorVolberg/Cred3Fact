@@ -13,7 +13,8 @@ clear all
 
 % set up paths, responses, monitor, ...
 addpath('./func'); 
-stimpath = './stim/';
+stimpath = '../stim/';
+stimlist = importdata([stimpath, 'stimuli_file_list.mat']);
 
 [vp, msgInstruct, responseHand, rkeys] = get_experimentInfo();
 MonitorSelection = 3; % 6 in EEG, 3 in Gregor's office
@@ -65,6 +66,7 @@ msgAnswer = '?';
 
 %% results file
 cred3F      = [];
+timeString  = datestr(clock,30);  
 outfilename = ['sub-', vp, '_task-credibilityJudgement.mat'];
 
 try
@@ -83,8 +85,7 @@ try
     %% prepare blocks, images, and textures
     % 6 source articles x 8 conditions x 10 repetitions = 480 trials
     % 10 blocks with 48 trials each, plus catch trials
-    trialmat     = get_conditions(stimpath);
-    allBlocks    = get_cred3fBlocks(trialmat, nCatchTrials, diffCatch, ISI, frame_s);
+    allBlocks    = get_cred3fBlocks(stimlist, nCatchTrials, diffCatch, ISI, frame_s);
     
     % compute fliptime for target
     PTBStimulusTime = StimulusTime - (frame_s * 0.5);
@@ -104,8 +105,9 @@ try
     % show blank for smooth transition to next page
     VpixxMarkerZero(win);
     Screen('Flip', win);
-    WaitSecs(1);
-    
+       
+    % results table
+    fullTable = [];
    %% loop over blocks
     protocol = [];
     for nblock = 1:length(allBlocks)
@@ -147,7 +149,7 @@ try
             % draw and show target stimulus
             Screen('DrawTexture', win, textureMat(ntrial));  
             setVpixxMarker(win, 1);
-            [TargetStart] = Screen('Flip', win, CueStart + ablock.ISI(ntrial));
+            [TargetStart] = Screen('Flip', win, FixationStart + ablock.ISI(ntrial));
 
             % draw and show first frame of fixation for timing measures
             Screen('gluDisk', win, [0 0 0], xCenter, yCenter, centCirclePixel);
@@ -180,14 +182,19 @@ try
         blcks   = table(zeros(48,1) + nblock, [1:48]', 'VariableNames', {'block', 'trial'});
         protocolTable = [blcks, ablock, expdata];
             
-        % write protocol table into cell (per block)
-        protocol{nblock} = protocolTable;
+        % write protocol table 
+        fullTable = [fullTable; protocolTable];
+        clear protocolTable
         
+        % show blank screen
+        VpixxMarkerZero(win);
+        Screen('Flip', win);
+
             % show break message
             WaitSecs(2);
             if nblock < numel(allBlocks)
                 Screen('TextSize', win, textSize);
-                DrawFormattedText(win, msgBreak, 'center', 'center', colorWhite);
+                DrawFormattedText(win, msgBreak, 'center', 'center', [255 255 255]);
                 VpixxMarkerZero(win);
                 Screen('Flip', win);
                 WaitSecs(BreakBetweenBlocks);
@@ -200,17 +207,17 @@ try
 cred3F.experiment         = 'task-credibilityJudgements';
 cred3F.participant        = vp;
 cred3F.date               = timeString;
-cred3F.protocol           = [protocol{1}, protocol{2}, protocol{3}, protocol{4}, protocol{5}, protocol{6}];
+cred3F.protocol           = fullTable;
 cred3F.response_hand      = responseHand;
 cred3F.monitor_refresh    = hz;
 cred3F.MonitorDimension   = MonitorDimension;
 
-save([rawdir, outfilename], 'cred3F');
+save(outfilename, 'cred3F');
 
 % show ending message
 KbQueueFlush; 
 Screen('TextSize', win, textSize);
-DrawFormattedText(win, msgEnd, 'center', 'center', colorWhite);
+DrawFormattedText(win, msgEnd, 'center', 'center', [255 255 255]);
 VpixxMarkerZero(win);
 Screen('Flip', win);
 KbQueueWait();     

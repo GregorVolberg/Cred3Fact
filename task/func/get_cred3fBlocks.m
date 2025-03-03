@@ -1,10 +1,27 @@
 function [blocks] = get_cred3fBlocks(trialmat, ncatch, diffCatch, ISI, frame_s)
-
+% randomize order with the constraint that the topic (column 1 of file list) is not repeated in sucessive trials
 trialsPerBlock = 48;
 
 % randomize trial matrix
-randomIndex    = Shuffle(1:size(trialmat,1));
-randomMat      = trialmat(randomIndex, :);
+targetMatrix = [1:numel(trialmat.topic); trialmat.topic']'; % 6 x 80
+tMat = nan(80,2,6);
+for k = 1:6
+    tMat(:,:,k) = Shuffle(targetMatrix(targetMatrix(:,2) == k, :));
+end
+
+indices = cell(10,1);
+for n = 1:10
+        tmp = tMat(((n-1)*8+1):((n-1)*8+1)+7, :, 1:6);
+        tmp2 = reshape(shiftdim(tmp, 2), [48, 2]);
+goodBlock = 0;
+while ~goodBlock
+    tmp3 = Shuffle(tmp2); % randomize within blocks
+    goodBlock = ~any(diff(tmp3(:,2))==0);
+end
+indices{n} =  tmp3(:,1)';   
+end
+allindices = [indices{:}];
+randomMat = trialmat(allindices,:);
 
 % get catch trials
 nCatchTrials    =  Sample(ncatch(1):ncatch(2));
@@ -31,51 +48,4 @@ blocks = cell(1,10);
 for k = 1:10
 blocks{k} = randomMat(blockStart(k):blockStop(k),:);
 end
-
-% randomize all with the following constraints: 
-% - no repetitions of topics
-% - no repetition within any of the three factors in the first and last
-%   <noRepetitions> per block 
-% 
-% % get block start / stop indices
-% blockIndicesStart = [1:trialsPerBlock:size(trialmat,1)];
-% blockIndicesStop  = [trialsPerBlock-(noRepetitions-1):trialsPerBlock:size(trialmat,1)];
-% 
-% % get <noRepetition> indices at the beginning and end of each block
-% indxStart = [blockIndicesStart', blockIndicesStart' + [1:(noRepetitions-1)]];
-% indxStop = [blockIndicesStop', blockIndicesStop' + [1:(noRepetitions-1)]];
-% allIndices = [indxStart, indxStop];
-% targetIndices = reshape(allIndices', 1, numel(allIndices));
-% 
-% % select relevant columns for randomizing
-% relevantCols = [trialmat.topic, trialmat.truth == 't', ...
-%                 ismember(cellstr(trialmat.language), 'll'), ...
-%                 ismember(cellstr(trialmat.visual), 'vl')];
-%             
-% goodBlock = 0;
-% fprintf('Generate blocks...\n');
-% while ~goodBlock
-%     % randomize
-%     randomIndex    = Shuffle(1:size(relevantCols,1));
-%     randomMat      = relevantCols(randomIndex, :);
-%     % test
-%     diffMat   = ([1 1 1 1; diff(randomMat)]);
-%     diffMat   = diffMat~=0;
-%     %topicRep  = any(diffMat(:,1) == 0); 
-%     %factorRep = sum(abs(diffMat(targetIndices,2:4)),2) >= 1;
-%     goodBlock      = all(sum(diffMat,2) < 2); 
-%     %goodBlock = all(~topicRep & factorRep);
-% end
-% fprintf('... finished.\n');
-% 
-% tProbability   = targetProbability(1) + (targetProbability(2) - targetProbability(1)) * rand(1);
-% numRepetitions = round(tProbability * blockLength);
-% numNoRepetitions  = blockLength - numRepetitions - noRepetitionAtStartAndEnd*2;
-% 
-% 
-% 
-% repetitions = [ones(1, noRepetitionAtStartAndEnd), tempRepetitions, ones(1, noRepetitionAtStartAndEnd)];
-% aBlock{j}    = repelem(allBlock, repetitions); %repelem(tempBlock(((j - 1) * blockLength + 1):(j * blockLength)), repetitions);
-% rFlag{j} = [0, diff(aBlock{j}) == 0];
-% end
 end
