@@ -49,20 +49,20 @@ textSize = 30;
 % StimulusTime       = 4; % seconds
 % nCatchTrials       = [8 12];  % [min, max]
 % diffCatch          = [25 60]; % [min max]
-% BreakBetweenBlocks = 30; % in seconds
+% BreakBetweenBlocks = 10; % in seconds
 
 % use these for testing:
 ISI           = [0.1 0.15]; % in seconds
 StimulusTime  = 0.1; % seconds
-nCatchTrials  = [8 12];  % [min, max]
+nCatchTrials  = [10 14];  % [min, max]
 diffCatch     = [25 60]; % [min max]
 BreakBetweenBlocks = 3; % in seconds
 
 %% messages
-msgStart  = 'The researcher is turning on the EEG recording.\n\n The experiment will start soon.';
-msgEnd    = '--- Experiment Ended ---\n\nPlease wait until the researcher turned off the recordings.';
-msgBreak  = 'Take a break (10 s)';
-msgAnswer = '?';
+msgStart  = 'Bitte warten Sie, bis die Untersucherin die EEG-Aufnahme gestartet hat.\n\n Das Experiment beginnt bald.';
+msgEnd    = '--- Ende des Experiments ---\n\nBitte warten Sie, bis die EEG-Aufnahme gestoppt wurde.';
+msgBreak  = 'Ruhen Sie sich aus (10 s)';
+msgAnswer = 'Wie glaubwürdig?';
 
 %% results file
 cred3F      = [];

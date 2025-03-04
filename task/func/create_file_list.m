@@ -18,3 +18,11 @@ flist = sortrows(table(topic', char(truth'), char(language'), char(visual'), exa
     'VariableNames',["topic" "truth" "language" "visual" "variant" "CSS" "file_name"]));
 save([stimpath, 'stimuli_file_list.mat'], 'flist');
 end
+% topics
+% 1:= Foreign labor in eastern Germany
+% 2:= Sewage plants do not filter out pharmaceuticals
+% 3:= 3D-printed meat
+% 4:= Gene therapy for hemophilia
+% 5:= Changes in "Deutschlandticket"
+% 6:= Lack of barrier-free conditions
+

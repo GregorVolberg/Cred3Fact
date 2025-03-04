@@ -9,13 +9,15 @@ function [vp, instruct, responseHand, rkeys] = get_experimentInfo()
    
     switch response_mapping
     case  1
-        instruct = 'Use the LEFT hand (keys y, x, c, and v) for responding.\n';
+        instruct = 'Antworten Sie mit der linken Hand.\n\n';
         responseHand = 'left';
     case  2
-        instruct = 'Use the RIGHT hand (keys y, x, c, and v) for responding.\n';
+        instruct = 'Antworten Sie mit der rechten Hand.\n\n';
         responseHand = 'right';
     end
 rkeys = {'y', 'x', 'c', 'v'};
+instr2 = '\n(sehr unglaubwürdig)    Y - X - C - V    (sehr glaubwürdig)\n\n\nDrücken Sie eine der Antworttasten, um den Durchgang zu starten.\n';
+instruct = [instruct, instr2]; 
 end
 
     
