@@ -47,8 +47,9 @@ textSize = 30;
 %% presentation parameters
 ISI                = [1.5 2]; % in seconds
 StimulusTime       = 4; % seconds
-nCatchTrials       = [10 14];  % [min, max]
-diffCatch          = [25 60]; % [min max]
+nTrials            = 12; % trials in practice runs
+nCatchTrials       = [4 5];  % [min, max]
+diffCatch          = [3 4]; % [min max]
 BreakBetweenBlocks = 10; % in seconds
 
 % % use these for testing:
@@ -64,10 +65,10 @@ msgEnd    = '--- Ende des Experiments ---\n\nBitte warten Sie, bis die EEG-Aufna
 msgBreak  = 'Ruhen Sie sich aus (10 s)';
 msgAnswer = 'Wie glaubwürdig?';
 
-%% results file
-cred3F      = [];
-timeString  = datestr(clock,30);  
-outfilename = ['sub-', vp, '_task-credibilityJudgement.mat'];
+% % results file
+% cred3F      = [];
+% timeString  = datestr(clock,30);  
+% outfilename = ['sub-', vp, '_task-credibilityJudgement.mat'];
 
 try
     Priority(1);
@@ -83,10 +84,8 @@ try
     frame_s = (1/hz);
 
     %% prepare blocks, images, and textures
-    % 6 source articles x 8 conditions x 10 repetitions = 480 trials
-    % 10 blocks with 48 trials each, plus catch trials
-    allBlocks    = get_cred3fBlocks(stimlist, nCatchTrials, diffCatch, ISI, frame_s);
-    
+    allBlocks    = get_cred3fBlocksPractice(stimlist, nTrials, nCatchTrials, diffCatch, ISI, frame_s);
+
     % compute fliptime for target
     PTBStimulusTime = StimulusTime - (frame_s * 0.5);
  
@@ -110,7 +109,7 @@ try
     fullTable = [];
    %% loop over blocks
     protocol = [];
-    for nblock = 1:length(allBlocks)
+    for nblock = 1:numel(allBlocks) % two practice blocks
         
         % read block definition, prepare stimuli
         ablock = allBlocks{nblock};
@@ -132,8 +131,8 @@ try
         % set TargetEnd for first trial so that it starts immediately
         TargetEnd = GetSecs + frame_s - PTBStimulusTime;
 
-        % clear protocolMatrix     
-        protocolTable = [];
+%         %clear protocolMatrix     
+%         protocolTable = [];
 
         %% loop over trials    
         for ntrial = 1:size(ablock, 1)
@@ -174,21 +173,21 @@ try
                 keyCode = NaN; responseTime = NaN;
             end
 
-            % compute presentation times
-            ftime(ntrial) = fixtime;
-            ttime(ntrial) = targettime;
-            kcode(ntrial) = keyCode;
-            rtime(ntrial) = responseTime;
+%             % compute presentation times
+%             ftime(ntrial) = fixtime;
+%             ttime(ntrial) = targettime;
+%             kcode(ntrial) = keyCode;
+%             rtime(ntrial) = responseTime;
         end
         
-        % copy all trial information into one table
-        expdata = table(ftime', ttime', kcode', rtime', 'VariableNames', {'cueTime', 'targetTime', 'keyCode', 'rTime'});
-        blcks   = table(zeros(48,1) + nblock, [1:48]', 'VariableNames', {'block', 'trial'});
-        protocolTable = [blcks, ablock, expdata];
+%         %copy all trial information into one table
+%         expdata = table(ftime', ttime', kcode', rtime', 'VariableNames', {'cueTime', 'targetTime', 'keyCode', 'rTime'});
+%         blcks   = table(zeros(48,1) + nblock, [1:48]', 'VariableNames', {'block', 'trial'});
+%         protocolTable = [blcks, ablock, expdata];
             
         % write protocol table 
-        fullTable = [fullTable; protocolTable];
-        clear protocolTable
+%        fullTable = [fullTable; protocolTable];
+%        clear protocolTable
         
         % show blank screen
         VpixxMarkerZero(win);
@@ -207,16 +206,16 @@ try
         WaitSecs(1);
     end
 
-% write results and supplementary information to structure
-cred3F.experiment         = 'task-credibilityJudgements';
-cred3F.participant        = vp;
-cred3F.date               = timeString;
-cred3F.protocol           = fullTable;
-cred3F.response_hand      = responseHand;
-cred3F.monitor_refresh    = hz;
-cred3F.MonitorDimension   = MonitorDimension;
-
-save(outfilename, 'cred3F');
+% % write results and supplementary information to structure
+% cred3F.experiment         = 'task-credibilityJudgements';
+% cred3F.participant        = vp;
+% cred3F.date               = timeString;
+% cred3F.protocol           = fullTable;
+% cred3F.response_hand      = responseHand;
+% cred3F.monitor_refresh    = hz;
+% cred3F.MonitorDimension   = MonitorDimension;
+% 
+% %save(outfilename, 'cred3F'); % do not save practice blocks
 
 % show ending message
 KbQueueFlush; 
