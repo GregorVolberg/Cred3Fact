@@ -45,18 +45,18 @@ centCirclePixel = centCircleSize * MonitorSpecs.PixelsPerDegree;
 textSize = 30;
 
 %% presentation parameters
-% ISI                = [1.5 2]; % in seconds
-% StimulusTime       = 4; % seconds
-% nCatchTrials       = [8 12];  % [min, max]
-% diffCatch          = [25 60]; % [min max]
-% BreakBetweenBlocks = 10; % in seconds
+ISI                = [1.5 2]; % in seconds
+StimulusTime       = 4; % seconds
+nCatchTrials       = [10 14];  % [min, max]
+diffCatch          = [25 60]; % [min max]
+BreakBetweenBlocks = 10; % in seconds
 
-% use these for testing:
-ISI           = [0.1 0.15]; % in seconds
-StimulusTime  = 0.1; % seconds
-nCatchTrials  = [10 14];  % [min, max]
-diffCatch     = [25 60]; % [min max]
-BreakBetweenBlocks = 3; % in seconds
+% % use these for testing:
+% ISI           = [0.1 0.15]; % in seconds
+% StimulusTime  = 0.1; % seconds
+% nCatchTrials  = [10 14];  % [min, max]
+% diffCatch     = [25 60]; % [min max]
+% BreakBetweenBlocks = 3; % in seconds
 
 %% messages
 msgStart  = 'Bitte warten Sie, bis die Untersucherin die EEG-Aufnahme gestartet hat.\n\n Das Experiment beginnt bald.';
@@ -144,7 +144,7 @@ try
             % draw and show fixation
             Screen('gluDisk', win, [0 0 0], xCenter, yCenter, centCirclePixel);
             VpixxMarkerZero(win);
-            [FixationStart] = Screen('Flip', win, TargetEnd - frame_s + PTBStimulusTime);
+            [FixationStart] = Screen('Flip', win, TargetEnd);
             
             % draw and show target stimulus
             Screen('DrawTexture', win, textureMat(ntrial));  
@@ -154,8 +154,12 @@ try
             % draw and show first frame of fixation for timing measures
             Screen('gluDisk', win, [0 0 0], xCenter, yCenter, centCirclePixel);
             VpixxMarkerZero(win);
-            [TargetEnd] = Screen('Flip', win);
+            [TargetEnd] = Screen('Flip', win, TargetStart + PTBStimulusTime);
 
+            % keep track of presentation times   
+            fixtime    = TargetStart - FixationStart;
+            targettime = TargetEnd - TargetStart;
+            
             % in catch trial: show question mark and get response
             if ablock.catch(ntrial)
                DrawFormattedText(win, msgAnswer, 'center', 'center', [255 255 255]);
@@ -171,8 +175,8 @@ try
             end
 
             % compute presentation times
-            ftime(ntrial) = FixationStart - TargetStart;
-            ttime(ntrial) = TargetEnd - TargetStart;
+            ftime(ntrial) = fixtime;
+            ttime(ntrial) = targettime;
             kcode(ntrial) = keyCode;
             rtime(ntrial) = responseTime;
         end

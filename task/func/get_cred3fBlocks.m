@@ -6,7 +6,7 @@ trialsPerBlock = 48;
 targetMatrix = [1:numel(trialmat.topic); trialmat.topic']'; % 6 x 80
 tMat = nan(80,2,6);
 for k = 1:6
-    tMat(:,:,k) = Shuffle(targetMatrix(targetMatrix(:,2) == k, :));
+    tMat(:,:,k) = Shuffle(targetMatrix(targetMatrix(:,2) == k, :),2);
 end
 
 indices = cell(10,1);
@@ -15,7 +15,7 @@ for n = 1:10
         tmp2 = reshape(shiftdim(tmp, 2), [48, 2]);
 goodBlock = 0;
 while ~goodBlock
-    tmp3 = Shuffle(tmp2); % randomize within blocks
+    tmp3 = Shuffle(tmp2, 2); % randomize within blocks
     goodBlock = ~any(diff(tmp3(:,2))==0);
 end
 indices{n} =  tmp3(:,1)';   
@@ -24,10 +24,10 @@ allindices = [indices{:}];
 randomMat = trialmat(allindices,:);
 
 % get catch trials
-nCatchTrials    =  Sample(ncatch(1):ncatch(2));
+nc    =  Sample(ncatch(1):ncatch(2));
 goodCatchTrials = 0;
 while ~goodCatchTrials
-    catchT = sort(randsample(1:size(trialmat,1), nCatchTrials));
+    catchT = sort(randsample(1:size(trialmat,1), nc));
     goodCatchTrials = ~any(diff(catchT) < diffCatch(1) | diff(catchT) > diffCatch(2));
 end
 cTrials = zeros(size(trialmat, 1), 1);

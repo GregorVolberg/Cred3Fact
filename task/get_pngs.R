@@ -3,10 +3,10 @@ library(stringr)
 
 #fnames     <- list.files('X:/Volberg/Cred3Fact/src/stim/eeg-study/',
 #                         pattern = '2-f-lh-[0-9]{1,2}-vl-[1-8].html')
-fnames     <- list.files('X:/Volberg/Cred3Fact/src/stim/eeg-study/',
+fnames     <- list.files('X:/Volberg/Cred3Fact/src/stim/eeg-study-2/',
                          pattern = '*.html')
 
-fnames_in  <- str_c('X:/Volberg/Cred3Fact/src/stim/eeg-study/', fnames)
+fnames_in  <- str_c('X:/Volberg/Cred3Fact/src/stim/eeg-study-2/', fnames)
 fnames_out <- str_c('X:/Volberg/Cred3Fact/src/stim/', str_sub(fnames, 1, -6), '.png')
 
 rd1 <- rsDriver(browser = "firefox",
