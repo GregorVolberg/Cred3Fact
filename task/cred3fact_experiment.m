@@ -215,6 +215,7 @@ cred3F.protocol           = fullTable;
 cred3F.response_hand      = responseHand;
 cred3F.monitor_refresh    = hz;
 cred3F.MonitorDimension   = MonitorDimension;
+cred3F.VisionRecorderWorkspace   = 'M-10-10-EOG.wrksp';
 
 save(outfilename, 'cred3F');
 
